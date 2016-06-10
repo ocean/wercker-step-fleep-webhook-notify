@@ -1,16 +1,49 @@
-#!/bin/sh
+#!/bin/bash
 
-if [ ! -n "$DEPLOY" ]; then
-  export WERCKER_HTTP_NOTIFY_TYPE="build"
-else
-  export WERCKER_HTTP_NOTIFY_TYPE="deploy"
+#check if the Fleep webhook URL was provided
+if [[ -z "$WERCKER_FLEEP_WEBHOOK_NOTIFY_URL" ]]; then
+  fail "Error: \$FLEEP_WEBHOOK_URL not set."
 fi
 
-curl -d "result=$WERCKER_RESULT" \
-     -d "type=$WERCKER_HTTP_NOTIFY_TYPE" \
-     -d "application_owner_name=$WERCKER_APPLICATION_OWNER_NAME" \
-     -d "application_name=$WERCKER_APPLICATION_NAME" \
-     -d "git_branch=$WERCKER_GIT_BRANCH" \
-     -d "started_by=$WERCKER_STARTED_BY" \
-     -d "build_url=$WERCKER_BUILD_URL" \
-     $WERCKER_HTTP_NOTIFY_URL
+if [[ -n "$DEPLOY" ]]; then
+  # it's a deploy!
+  export ACTION="deploy"
+  export ACTION_URL="${WERCKER_DEPLOY_URL}"
+else
+  # it's a build!
+  export ACTION="build"
+  export ACTION_URL="${WERCKER_BUILD_URL}"
+fi
+
+export RESULT_UPCASE=$(echo "$WERCKER_RESULT" | tr [:lower:] [:upper:])
+
+export WERCKER_FLEEP_WEBHOOK_NOTIFY_MESSAGE_TEXT="$RESULT_UPCASE: $WERCKER_STARTED_BY ran a $ACTION step for $WERCKER_APPLICATION_NAME which $WERCKER_RESULT.\n
+$ACTION_URL"
+
+# curl -d "message=${WERCKER_FLEEP_WEBHOOK_NOTIFY_MESSAGE_TEXT}" -d "user=Wercker" "${WERCKER_FLEEP_WEBHOOK_NOTIFY_URL}"
+
+# post the result to the Fleep webhook
+RESULT=$(curl -d "message=${WERCKER_FLEEP_WEBHOOK_NOTIFY_MESSAGE_TEXT}" -d "user=Wercker" -s "$WERCKER_FLEEP_WEBHOOK_NOTIFY_URL" --output "$WERCKER_STEP_TEMP"/result.txt -w "%{http_code}")
+cat "$WERCKER_STEP_TEMP/result.txt"
+
+if [ "$RESULT" = "500" ]; then
+  if grep -Fqx "No token" "$WERCKER_STEP_TEMP/result.txt"; then
+    fail "No token is specified."
+  fi
+
+  if grep -Fqx "No hooks" "$WERCKER_STEP_TEMP/result.txt"; then
+    fail "No hook can be found for specified subdomain/token"
+  fi
+
+  if grep -Fqx "Invalid channel specified" "$WERCKER_STEP_TEMP/result.txt"; then
+    fail "Could not find specified channel for subdomain/token."
+  fi
+
+  if grep -Fqx "No text specified" "$WERCKER_STEP_TEMP/result.txt"; then
+    fail "No text specified."
+  fi
+fi
+
+if [ "$RESULT" = "404" ]; then
+  fail "Subdomain or token not found."
+fi
