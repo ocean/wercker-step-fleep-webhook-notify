@@ -1,10 +1,15 @@
-box: wercker/default
+box: ubuntu:12.04
 build:
   steps:
     - shellcheck:
       files: run.sh
-    # - validate-wercker-step
+
+    - validate-wercker-step
 
     - script:
       name: prepare output
       code: rm -rf $WERCKER_ROOT/.git
+
+deploy:
+  steps:
+    - wercker-directory
