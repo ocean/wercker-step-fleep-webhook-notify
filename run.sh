@@ -17,7 +17,7 @@ fi
 
 export RESULT_UPCASE=$(echo "$WERCKER_RESULT" | tr [:lower:] [:upper:])
 
-export WERCKER_FLEEP_WEBHOOK_NOTIFY_MESSAGE_TEXT="$RESULT_UPCASE: $WERCKER_STARTED_BY ran a $ACTION step for $WERCKER_APPLICATION_NAME which $WERCKER_RESULT.\n
+export WERCKER_FLEEP_WEBHOOK_NOTIFY_MESSAGE_TEXT="*$RESULT_UPCASE*: $WERCKER_STARTED_BY ran a *$ACTION* step for _'$WERCKER_APPLICATION_NAME'_ which *$WERCKER_RESULT*.
 $ACTION_URL"
 
 # curl -d "message=${WERCKER_FLEEP_WEBHOOK_NOTIFY_MESSAGE_TEXT}" -d "user=Wercker" "${WERCKER_FLEEP_WEBHOOK_NOTIFY_URL}"
@@ -47,3 +47,5 @@ fi
 if [ "$RESULT" = "404" ]; then
   fail "Subdomain or token not found."
 fi
+
+exit 0
