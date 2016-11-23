@@ -1,5 +1,5 @@
 name: fleep-webhook-notify
-version: 1.0.0
+version: 1.0.1
 description: Send a message to a Fleep conversation by sending an HTTP request to a specified Fleep generic webhook.
 keywords:
   - webhook
