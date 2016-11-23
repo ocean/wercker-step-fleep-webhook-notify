@@ -1,3 +1,5 @@
+box: node:0.10
+
 build:
   steps:
     - shellcheck:
