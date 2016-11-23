@@ -29,7 +29,7 @@ From these parameters a Fleep message is built which is formatted like so:
 
 In Fleep, that looks a little bit like this:
 
-<img src="fleep-notify-step-example.png">
+<img src="https://raw.githubusercontent.com/ocean/wercker-step-fleep-webhook-notify/master/fleep-notify-step-example.png">
 
 ## Example
 
