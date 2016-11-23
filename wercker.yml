@@ -1,16 +1,10 @@
-box: node:0.10
-
 build:
   steps:
     - shellcheck:
-      files: run.sh
+        files: run.sh
 
     - validate-wercker-step
 
     - script:
-      name: prepare output
-      code: rm -rf $WERCKER_ROOT/.git
-
-deploy:
-  steps:
-    - wercker-directory
+        name: prepare output
+        code: rm -rf $WERCKER_ROOT/.git
