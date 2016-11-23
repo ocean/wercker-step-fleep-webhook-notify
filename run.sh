@@ -23,7 +23,7 @@ else
   export RESULT_EMOJI=''
 fi
 
-export RESULT_UPCASE=$(echo "$WERCKER_RESULT" | tr [:lower:] [:upper:])
+export RESULT_UPCASE=$(echo "$WERCKER_RESULT" | tr "[:lower:]" "[:upper:]")
 
 export WERCKER_FLEEP_WEBHOOK_NOTIFY_MESSAGE_TEXT="$RESULT_EMOJI  *$RESULT_UPCASE*: $WERCKER_STARTED_BY ran a *$ACTION* step for _'$WERCKER_APPLICATION_NAME'_ which *$WERCKER_RESULT*.  $RESULT_EMOJI
 $ACTION_URL"
